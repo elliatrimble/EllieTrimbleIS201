@@ -1,0 +1,73 @@
+.common{
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+
+.centered-list{
+    padding-left: 0;
+    list-style-position: outside;
+    margin: 0 auto;
+    display: table;
+    text-align: left;
+}
+
+/* This is what centered the Tableau Dashboard */
+#viz1744691296248 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    padding: 20px 0; /* optional spacing above and below */
+  }
+  .tableauViz {
+    margin: 0 auto;
+  }
+
+
+body{
+    background-color: whitesmoke;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    border: 15px solid rgb(189, 29, 29);
+    margin: 25px;
+    padding: 35px;
+}
+
+/* .footer{ */
+    /* position: fixed; */
+    /* background-color: rgb(189, 29, 29); */
+    /* color: white; */
+    /* bottom: 0px; */
+    /* left: 3px; */
+    /* right: 3px; */
+    /* height: 25px; */
+    /* line-height: 25px; */
+/* } */
+
+img{
+    display: block;
+    width: 35%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+nav{
+    background-color: rgb(189, 29, 29);
+    padding:10px;
+    overflow: hidden;
+}
+
+nav a{
+    color: whitesmoke;
+    text-decoration: none;
+    padding: 15px;
+    font-weight: bold;
+}
+
+nav a:hover{
+    background-color: black;
+}
+
