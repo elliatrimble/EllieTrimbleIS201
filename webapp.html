@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Broadway Musical Guessing Game</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fff;
+      color: #000;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      color: #c62828;
+    }
+    #hint {
+      font-size: 1.3rem;
+      margin: 1rem 0;
+      font-weight: bold;
+      color: #6a1b9a;
+    }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .choices button {
+      padding: 0.5rem 1rem;
+      background: #6a1b9a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .choices button:hover {
+      background: #8e24aa;
+    }
+    #score {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    table {
+      width: 90%;
+      max-width: 600px;
+      margin: 1rem auto;
+      border-collapse: collapse;
+      color: #000;
+    }
+    th, td {
+      border: 1px solid #9c27b0;
+      padding: 0.5rem;
+      font-size: 0.95rem;
+    }
+    th {
+      background-color: #c62828;
+      color: #fff;
+    }
+    #startOver {
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background: #c62828;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      display: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="startOver">🔁 Start Over</button>
+  <h1>🎭 Broadway Musical Guessing Game</h1>
+  <p>Guess which musical a song is from. First to 3 correct wins!</p>
+
+  <div id="hint"></div>
+  <div class="choices" id="choices"></div>
+  <div id="score"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Round</th>
+        <th>Your Guess</th>
+        <th>Computer Guess</th>
+        <th>Correct Musical</th>
+      </tr>
+    </thead>
+    <tbody id="results"></tbody>
+  </table>
+
+  <script>
+    const songs = [
+      { title: "Defying Gravity", musical: "Wicked" },
+      { title: "One Day More", musical: "Les Misérables" },
+      { title: "Alexander Hamilton", musical: "Hamilton" },
+      { title: "The Room Where It Happens", musical: "Hamilton" },
+      { title: "Memory", musical: "Cats" },
+      { title: "Let It Go", musical: "Frozen" },
+      { title: "Seasons of Love", musical: "Rent" },
+      { title: "All That Jazz", musical: "Chicago" },
+      { title: "You Will Be Found", musical: "Dear Evan Hansen" },
+      { title: "The Phantom of the Opera", musical: "The Phantom of the Opera" },
+      { title: "My Shot", musical: "Hamilton" },
+      { title: "Dancing Through Life", musical: "Wicked" },
+      { title: "Do You Hear the People Sing?", musical: "Les Misérables" }
+    ];
+
+    const musicals = [
+      ...new Set(songs.map(song => song.musical)) // get unique musicals
+    ];
+
+    let playerScore = 0;
+    let computerScore = 0;
+    let round = 1;
+    let correctSong = null;
+
+    const hintDiv = document.getElementById("hint");
+    const choicesDiv = document.getElementById("choices");
+    const scoreDiv = document.getElementById("score");
+    const resultsBody = document.getElementById("results");
+    const startOverBtn = document.getElementById("startOver");
+
+    startOverBtn.onclick = () => resetGame();
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function startRound() {
+      choicesDiv.innerHTML = "";
+
+      correctSong = songs[Math.floor(Math.random() * songs.length)];
+      hintDiv.textContent = `🎵 Song: "${correctSong.title}"`;
+
+      // Create answer choices: include correct one, then add 3 incorrect ones
+      const incorrectChoices = musicals.filter(m => m !== correctSong.musical);
+      const randomIncorrects = shuffle(incorrectChoices).slice(0, 3);
+      const options = shuffle([correctSong.musical, ...randomIncorrects]);
+
+      options.forEach(musical => {
+        const btn = document.createElement("button");
+        btn.textContent = musical;
+        btn.onclick = () => handleGuess(musical);
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    function handleGuess(playerGuess) {
+      const possibleGuesses = [correctSong.musical, ...shuffle(musicals.filter(m => m !== correctSong.musical)).slice(0, 3)];
+      const computerGuess = shuffle(possibleGuesses)[0];
+
+      const playerCorrect = playerGuess === correctSong.musical;
+      const computerCorrect = computerGuess === correctSong.musical;
+
+      if (playerCorrect) playerScore++;
+      if (computerCorrect) computerScore++;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${round}</td>
+        <td>${playerGuess} ${playerCorrect ? '✅' : '❌'}</td>
+        <td>${computerGuess} ${computerCorrect ? '✅' : '❌'}</td>
+        <td>${correctSong.musical}</td>
+      `;
+      resultsBody.prepend(row);
+
+      scoreDiv.textContent = `Score — You: ${playerScore} | Computer: ${computerScore}`;
+
+      if (playerScore === 3 || computerScore === 3) {
+        const winner = playerScore === 3 ? "🎉 You win!" : "🤖 Computer wins!";
+        scoreDiv.textContent = `Game Over! ${winner}`;
+        choicesDiv.querySelectorAll("button").forEach(btn => btn.disabled = true);
+        startOverBtn.style.display = "inline-block";
+      } else {
+        round++;
+        setTimeout(startRound, 1000);
+      }
+    }
+
+    function resetGame() {
+      playerScore = 0;
+      computerScore = 0;
+      round = 1;
+      resultsBody.innerHTML = "";
+      startOverBtn.style.display = "none";
+      scoreDiv.textContent = "";
+      startRound();
+    }
+
+    startRound();
+  </script>
+  <a href="scratch.html">Go to Home</a>
+</body>
+</html>
